@@ -7,6 +7,10 @@ spring:
     password: pw
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
   h2:
     console:
       enabled: true
+
+# Data
+dispatcher.id: 85e9f816-ebb3-4626-a684-17746f39eee3

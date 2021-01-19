@@ -2,6 +2,7 @@ package com.exercise.cfs.model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "cfs")
@@ -30,9 +31,12 @@ public class CallForService {
     @JoinColumn(name = "dispatcher_id", nullable = false)
     private Dispatcher dispatcher; // creates by
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "responder_id", nullable = false)
-    private Responder responder; // handles by
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "cfs_responder",
+            joinColumns = @JoinColumn(name = "cfs_id"),
+            inverseJoinColumns = @JoinColumn(name = "responder_id"))
+    private List<Responder> responders; // handle by
 
     public UUID getId() {
         return id;
@@ -90,11 +94,11 @@ public class CallForService {
         this.dispatcher = dispatcher;
     }
 
-    public Responder getResponder() {
-        return responder;
+    public List<Responder> getResponders() {
+        return responders;
     }
 
-    public void setResponder(Responder responder) {
-        this.responder = responder;
+    public void setResponders(List<Responder> responders) {
+        this.responders = responders;
     }
 }

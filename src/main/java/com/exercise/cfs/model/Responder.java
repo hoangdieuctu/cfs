@@ -20,7 +20,7 @@ public class Responder {
     @JoinColumn(name = "agency_id", nullable = false)
     private Agency agency;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "responder")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "responders")
     private List<CallForService> callForServices;
 
     public UUID getId() {

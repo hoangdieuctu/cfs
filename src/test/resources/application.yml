@@ -7,6 +7,7 @@ spring:
     password: pw
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
   h2:
     console:
       enabled: true

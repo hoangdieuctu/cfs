@@ -1,7 +1,7 @@
 package com.exercise.cfs.service;
 
-import com.exercise.cfs.dto.PageResponse;
-import com.exercise.cfs.dto.TimeRange;
+import com.exercise.cfs.dto.*;
+import com.exercise.cfs.exception.CFSException;
 import com.exercise.cfs.model.Agency;
 import com.exercise.cfs.model.CallForService;
 import com.exercise.cfs.model.Dispatcher;
@@ -16,10 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @SpringBootTest
 public class CFSServiceTest {
@@ -93,7 +90,7 @@ public class CFSServiceTest {
         cfs1.setCode("F001");
         cfs1.setAgency(agency);
         cfs1.setDispatcher(dispatcher);
-        cfs1.setResponder(responder1); // responder 1
+        cfs1.setResponders(Collections.singletonList(responder1)); // responder 1
         cfs1.setEventTime(last30mins);
         cfs1.setDispatchTime(last29mins);
         callForServiceRepository.save(cfs1);
@@ -108,7 +105,7 @@ public class CFSServiceTest {
         cfs2.setCode("F002");
         cfs2.setAgency(agency);
         cfs2.setDispatcher(dispatcher);
-        cfs2.setResponder(responder2); // responder 2
+        cfs2.setResponders(Collections.singletonList(responder2)); // responder 2
         cfs2.setEventTime(last20mins);
         cfs2.setDispatchTime(last19mins);
         callForServiceRepository.save(cfs2);
@@ -123,7 +120,7 @@ public class CFSServiceTest {
         cfs3.setCode("F003");
         cfs3.setAgency(agency);
         cfs3.setDispatcher(dispatcher);
-        cfs3.setResponder(responder2); // responder 2
+        cfs3.setResponders(Collections.singletonList(responder2)); // responder 2
         cfs3.setEventTime(last10mins);
         cfs3.setDispatchTime(last9mins);
         callForServiceRepository.save(cfs3);
@@ -138,19 +135,21 @@ public class CFSServiceTest {
         cfs4.setCode("F004");
         cfs4.setAgency(agency);
         cfs4.setDispatcher(dispatcher);
-        cfs4.setResponder(responder2); // responder 2
+        cfs4.setResponders(Collections.singletonList(responder2)); // responder 2
         cfs4.setEventTime(last5mins);
         cfs4.setDispatchTime(last4mins);
         callForServiceRepository.save(cfs4);
     }
 
     @Test
-    public void testFindByResponder() {
-        List<CallForService> callForServices = cfsService.findByResponderId(responderId1);
-        Assertions.assertEquals(1, callForServices.size());
-
-        CallForService cfs = callForServices.get(0);
-        Assertions.assertEquals(cfsId1, cfs.getId());
+    public void testSearchWithDispatcherNotFound() {
+        UUID id = UUID.randomUUID();
+        try {
+            cfsService.search(id, null, null, null);
+            Assertions.fail("This should throw an exception when dispatcher not found");
+        } catch (CFSException ex) {
+            Assertions.assertEquals("Dispatcher not found: " + id, ex.getMessage());
+        }
     }
 
     @Test
@@ -159,6 +158,7 @@ public class CFSServiceTest {
         Assertions.assertEquals(4, response.getTotalElements());
         Assertions.assertEquals(1, response.getTotalPages());
         List<CallForService> items = response.getContent();
+        Assertions.assertEquals(4, items.size());
         Assertions.assertEquals(cfsId1, items.get(0).getId());
         Assertions.assertEquals(cfsId2, items.get(1).getId());
         Assertions.assertEquals(cfsId3, items.get(2).getId());
@@ -175,6 +175,7 @@ public class CFSServiceTest {
         Assertions.assertEquals(2, response.getTotalElements());
         Assertions.assertEquals(1, response.getTotalPages());
         List<CallForService> items = response.getContent();
+        Assertions.assertEquals(2, items.size());
         Assertions.assertEquals(cfsId2, items.get(0).getId());
         Assertions.assertEquals(cfsId3, items.get(1).getId());
     }
@@ -188,6 +189,7 @@ public class CFSServiceTest {
         Assertions.assertEquals(3, response.getTotalElements());
         Assertions.assertEquals(1, response.getTotalPages());
         List<CallForService> items = response.getContent();
+        Assertions.assertEquals(3, items.size());
         Assertions.assertEquals(cfsId2, items.get(0).getId());
         Assertions.assertEquals(cfsId3, items.get(1).getId());
         Assertions.assertEquals(cfsId4, items.get(2).getId());
@@ -202,10 +204,42 @@ public class CFSServiceTest {
         Assertions.assertEquals(3, response.getTotalElements());
         Assertions.assertEquals(1, response.getTotalPages());
         List<CallForService> items = response.getContent();
+        Assertions.assertEquals(3, items.size());
         Assertions.assertEquals(cfsId1, items.get(0).getId());
         Assertions.assertEquals(cfsId2, items.get(1).getId());
         Assertions.assertEquals(cfsId3, items.get(2).getId());
     }
 
-    // TODO: wrire unit test for page and sort
+    @Test
+    public void testSearchByTimeBeforeWithPaging() {
+        Date last7mins = getDateInDiffCurrentTimeInMinutes(-7);
+        TimeRange timeRange = new TimeRange(null, last7mins);
+
+        Page page = new Page(2, 0);
+
+        PageResponse<CallForService> response = cfsService.search(dispatcherId, timeRange, page, null);
+        Assertions.assertEquals(3, response.getTotalElements());
+        Assertions.assertEquals(2, response.getTotalPages());
+        List<CallForService> items = response.getContent();
+        Assertions.assertEquals(2, items.size());
+        Assertions.assertEquals(cfsId1, items.get(0).getId());
+        Assertions.assertEquals(cfsId2, items.get(1).getId());
+    }
+
+    @Test
+    public void testSearchByTimeBeforeWithPagingAndSorting() {
+        Date last7mins = getDateInDiffCurrentTimeInMinutes(-7);
+        TimeRange timeRange = new TimeRange(null, last7mins);
+
+        Page page = new Page(2, 0);
+        Sort sort = new Sort("code", Order.desc);
+
+        PageResponse<CallForService> response = cfsService.search(dispatcherId, timeRange, page, sort);
+        Assertions.assertEquals(3, response.getTotalElements());
+        Assertions.assertEquals(2, response.getTotalPages());
+        List<CallForService> items = response.getContent();
+        Assertions.assertEquals(2, items.size());
+        Assertions.assertEquals(cfsId3, items.get(0).getId());
+        Assertions.assertEquals(cfsId2, items.get(1).getId());
+    }
 }
