@@ -183,9 +183,26 @@ Sample response
 ```
 
 ## Production Monitoring
-To make sure the production always up, there are some metrics need to be checked in every seconds.
+There are the four most important metrics to monitor the service:
 
-| Metric | Endpoint | Expectation | Description |
-| -- | -- | -- | -- |
-| health | /actuator/health | UP | The service is Up or DOWN |
-| tomcat_threads_current_threads | /actuator/prometheus | <= 200 | The value should be < max threads.<br/> By default is 200.<br/> When reach the max threads config, the service can be scaled more instances.|
+1. Latency
+2. Traffic
+3. Errors
+4. Saturation
+
+Those metrics can be found in `/actuator/prometheus` endpoint.
+```
+http_server_requests_seconds_sum
+http_server_requests_seconds_count
+
+tomcat_threads_current_threads
+tomcat_connections_current_connections
+
+hikaricp_connections_usage_seconds_count
+hikaricp_connections_usage_seconds_sum
+
+hikaricp_connections_timeout_total
+
+process_cpu_usage
+jvm_memory_used_bytes
+```
