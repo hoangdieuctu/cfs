@@ -25,10 +25,6 @@ The service that helps to manage the CFS events.
 ├── HELP.md
 ├── README.md
 ├── entrypoint.sh
-├── img
-│   ├── cfs-data-model.png
-│   ├── cfs-database-diagram.png
-│   └── cfs-system.png
 ├── mvnw
 ├── mvnw.cmd
 ├── pom.xml
@@ -189,5 +185,5 @@ To make sure the production always up, there are some metrics need to be checked
 
 | Metric | Endpoint | Expect | Description |
 | -- | -- | -- | -- |
-| health | /actuator/health | UP | Check and know that the service is Up or DOWN |
-| tomcat_threads_current_threads | /actuator/prometheus | <= 200 | The value should be < max threads config.<br/> By default is 200.<br/> When reach the max config, the service can be scaled more instances.|
+| health | /actuator/health | UP | The service is Up or DOWN |
+| tomcat_threads_current_threads | /actuator/prometheus | <= 200 | The value should be < max threads.<br/> By default is 200.<br/> When reach the max threads config, the service can be scaled more instances.|
