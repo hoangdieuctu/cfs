@@ -134,10 +134,13 @@ URL
 ```
 http://localhost:8080/api/cfs
 ```
-
 Method
 ```
 GET
+```
+Swagger
+```
+http://localhost:8080/swagger-ui.html#
 ```
 Parameters
 | Name | Type | Require | Default value | Description |
@@ -178,7 +181,6 @@ Sample response
   ]
 }
 ```
-
 
 ## Production Monitoring
 To make sure the production always up, there are some metrics need to be checked in every seconds.
