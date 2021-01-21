@@ -1,6 +1,15 @@
 # CFS Service
 The service that helps to manage the CFS events.
 
+### Table of Contents
+**[System Overview](#system-overview)**<br>
+**[Data Models](#data-models)**<br>
+**[Database Design](#database-design)**<br>
+**[Project Structure](#project-structure)**<br>
+**[Dependencies](#dependencies)**<br>
+**[How To Run](#how-to-run)**<br>
+**[Production Monitoring](#production-monitoring)**<br>
+
 ## System Overview
 ![picture](img/cfs-system.png)
 
@@ -175,10 +184,10 @@ Sample response
 ```
 
 
-### Production Monitoring
+## Production Monitoring
 To make sure the production always up, there are some metrics need to be checked in every seconds.
 
 | Metric | Endpoint | Expect | Description |
 | -- | -- | -- | -- |
-| health | /actuator/health | Status UP | Check and know that the service is Up or DOWN |
-| tomcat_threads_current_threads | /actuator/prometheus | < 200 | The value should be < tomcat_threads_config_max_threads.<br/> By default is 200.<br/> When reach the max config, the service can be scaled more instances.|
+| health | /actuator/health | UP | Check and know that the service is Up or DOWN |
+| tomcat_threads_current_threads | /actuator/prometheus | <= 200 | The value should be < max threads config.<br/> By default is 200.<br/> When reach the max config, the service can be scaled more instances.|
