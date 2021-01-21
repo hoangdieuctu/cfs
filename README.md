@@ -185,7 +185,7 @@ Sample response
 ## Production Monitoring
 To make sure the production always up, there are some metrics need to be checked in every seconds.
 
-| Metric | Endpoint | Expect | Description |
+| Metric | Endpoint | Expectation | Description |
 | -- | -- | -- | -- |
 | health | /actuator/health | UP | The service is Up or DOWN |
 | tomcat_threads_current_threads | /actuator/prometheus | <= 200 | The value should be < max threads.<br/> By default is 200.<br/> When reach the max threads config, the service can be scaled more instances.|
