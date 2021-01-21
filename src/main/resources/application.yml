@@ -1,3 +1,15 @@
+# Server Config
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+
 # Database
 spring:
   datasource:

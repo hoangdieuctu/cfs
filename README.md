@@ -80,13 +80,15 @@ The service that helps to manage the CFS events.
 spring-boot-starter-web
 spring-boot-starter-data-jpa
 spring-boot-starter-actuator
+micrometer-registry-prometheus
 springfox-swagger2
 spring-boot-starter-test
 ```
 
 ## How To Run
 ### Generated data for testing
-By adding the following param for starting command, the service will generate some data items for testing.
+By adding the following param for starting command, the service will generate some data items for testing. <br/>
+Note: by scope of homework, I use h2 database for storing the CFS events.
 ```bash
 -Ddata.generate=true
 ```
@@ -133,15 +135,15 @@ Method
 GET
 ```
 Parameters
-| Name | Type | Optional | Default value | Description |
+| Name | Type | Require | Default value | Description |
 | -- | -- | -- | -- | -- |
-| dispatcherId | UUID |  | - | The dispatcher id, get from the sample data |
-| fromTime | String | x  | null | The event from time, in format yyyy-MM-dd HH:mm:ss |
-| toTime | String | x  | null | The event to time, in format yyyy-MM-dd HH:mm:ss |
-| pageNum | Integer | x  | 0 | - |
-| pageSize | Integer | x  | 10 | - |
-| sortBy | String | x  | eventTime | The values: number, code, eventTime, dispatchTime |
-| sortOrder | String | x  | asc | The values: asc, desc |
+| dispatcherId | UUID | x  | - | Get from the sample data |
+| fromTime | String | | null | Format: yyyy-MM-dd HH:mm:ss |
+| toTime | String | | null | Format: yyyy-MM-dd HH:mm:ss |
+| pageNum | Integer | | 0 | - |
+| pageSize | Integer | | 10 | - |
+| sortBy | String | | eventTime | Available values: number, code, eventTime, dispatchTime |
+| sortOrder | String | | asc | Available values: asc, desc |
 
 
 Sample request
@@ -174,3 +176,9 @@ Sample response
 
 
 ### Production Monitoring
+To make sure the production always up, there are some metrics need to be checked in every seconds.
+
+| Metric | Endpoint | Expect | Description |
+| -- | -- | -- | -- |
+| health | /actuator/health | Status UP | Check and know that the service is Up or DOWN |
+| tomcat_threads_current_threads | /actuator/prometheus | < 200 | The value should be < tomcat_threads_config_max_threads.<br/> By default is 200.<br/> When reach the max config, the service can be scaled more instances.|
